@@ -27,11 +27,6 @@ public class Personaje {
         this.rangoMovimiento = rangoMovimiento;
     }
 
-    public void moverse(int x, int y){
-        this.posX = x;
-        this.posY = y;
-    }
-
     public void recibirDmg(int damage){
         this.vida -= damage;
     }
