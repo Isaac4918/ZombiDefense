@@ -1,6 +1,7 @@
 package Interfaz;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -15,12 +16,12 @@ public class GestionIU extends JFrame implements MouseListener {
         frm_ventana=new JFrame();
         JPanel panel_juego=new JPanel(null);
 
-
-
-
         panel_juego.add(ventana);
 
+
         ventana.setBounds(0,0,617,700);
+
+
 
 
         frm_ventana.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -37,7 +38,16 @@ public class GestionIU extends JFrame implements MouseListener {
         ventana.setClickX(e.getX());
         ventana.setClickY(e.getY());
         //System.out.println("equis:"+ventana.getClickX()+"lle: "+ventana.getClickY());
-        System.out.println("cuadricula "+((ventana.getClickX()-65)/56));
+        //System.out.println("cuadricula X  "+((ventana.getClickX()-65)/56));
+        //System.out.println("cuadricula Y  "+((ventana.getClickY()-36)/56));
+
+
+
+
+        if ((((ventana.getClickX()-65)/56))==1){
+
+
+        }
 
     }
 
@@ -60,10 +70,10 @@ public class GestionIU extends JFrame implements MouseListener {
     public void mouseExited(MouseEvent e) {
 
     }
-
-
+/*
     public static void main(String args[]){
         GestionIU vent=new GestionIU();
 
     }
+*/
 }
