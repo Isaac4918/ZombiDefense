@@ -47,9 +47,9 @@ public class Proyectiles  extends JPanel implements Runnable {
 
     public Proyectiles(int xi, int yi, int xf, int yf) {
         this.xi=(xi*56)+65;
-        this.yi=(yi*56)+36;
+        this.yi=(yi*50)+36;
         this.xf=(xf*56)+65;
-        this.yf=(yf*56)+36;
+        this.yf=(yf*50)+36;
 
     }
 
@@ -59,11 +59,11 @@ public class Proyectiles  extends JPanel implements Runnable {
         System.out.println("yi: "+yi+ "    yf: "+yf);
 
         try {
-            while (xi!=xf || yi!=yf){
+            while ((xi!=xf) || (yi!=yf)){
 
                 if (xi<xf){
                     setXi(xi+1);
-                    //System.out.println("Equis de bala"+xi);
+                    System.out.println("Equis de bala"+xi);
                 }if (xi>xf){
                     setXi(xi-1);
                 }

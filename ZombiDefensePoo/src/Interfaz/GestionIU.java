@@ -4,14 +4,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.LinkedList;
 
 public class GestionIU extends JFrame implements MouseListener {
     static JFrame frm_ventana;
 
     Ventana ventana=new Ventana();
-
+    LinkedList heroes=new LinkedList();
 
     public GestionIU(){
+
 
         frm_ventana=new JFrame();
         JPanel panel_juego=new JPanel(null);
@@ -37,9 +39,10 @@ public class GestionIU extends JFrame implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         ventana.setClickX(e.getX());
         ventana.setClickY(e.getY());
-        //System.out.println("equis:"+ventana.getClickX()+"lle: "+ventana.getClickY());
+
+        //System.out.println("equis:"+ventana.getClickX()+"      lle: "+ventana.getClickY());
         //System.out.println("cuadricula X  "+((ventana.getClickX()-65)/56));
-        //System.out.println("cuadricula Y  "+((ventana.getClickY()-36)/56));
+        //System.out.println("cuadricula Y  "+((ventana.getClickY()-36)/50));
 
 
 
