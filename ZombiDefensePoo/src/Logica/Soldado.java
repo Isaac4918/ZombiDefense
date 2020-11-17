@@ -7,6 +7,8 @@ public class Soldado extends Personaje{
     private Arma arma;
     Utilidades U = new Utilidades();
 
+    public Soldado() {
+    }
 
     public Soldado(int vida, int velocidad, int armadura, int posX, int posY, int rangoMovimiento) {
         super(vida, velocidad, armadura, posX, posY, rangoMovimiento);
