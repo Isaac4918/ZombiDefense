@@ -3,21 +3,18 @@ package Logica;
 import java.util.LinkedList;
 
 public class Zombie extends Personaje{
-    int rangoAtaque;
-    int rangoEscucha;
-    int damage;
+    int rangoAtaque = 1;
+    int rangoEscucha = 4;
+    int rangoVision = 3;
+    int damage = 20;
 
     public Zombie() {
-    }
-
-    public Zombie(int vida, int velocidad, int armadura, int posX, int posY, int rangoMovimiento, int rangoAtaque, int rangoEscucha, int damage) {
-        super(vida, velocidad, armadura, posX, posY, rangoMovimiento);
-        this.rangoAtaque = rangoAtaque;
-        this.rangoEscucha = rangoEscucha;
-        this.damage = damage;
     }
 
     public void soltarObjeto(){
 
     }
+
+
+
 }

@@ -10,8 +10,8 @@ public class Soldado extends Personaje{
     public Soldado() {
     }
 
-    public Soldado(int vida, int velocidad, int armadura, int posX, int posY, int rangoMovimiento) {
-        super(vida, velocidad, armadura, posX, posY, rangoMovimiento);
+    public Soldado(int vida, int posX, int posY, int rangoMovimiento) {
+        super(vida, posX, posY, rangoMovimiento);
     }
 
     public void setArma(Arma arma) {
