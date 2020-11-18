@@ -15,6 +15,10 @@ public class Zombie extends Personaje{
 
     }
 
+    public void atacar(Soldado objetivo){
+        objetivo.recibirDmg(this.damage);
+    }
+
 
 
 }

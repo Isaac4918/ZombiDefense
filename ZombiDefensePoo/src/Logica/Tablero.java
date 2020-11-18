@@ -11,17 +11,17 @@ public class Tablero{
     public Tablero() throws InterruptedException {
         rellenar();
         generaSoldados();
-        generaZombies();
+        generaZombies(3);
         mostrar();
 
-        /*while(true){
+        while(true){
             Thread.sleep(3000);
             if(turno%2 == 0){
                 turnoZombie();
                 mostrar();
             }
             turno++;
-        }*/
+        }
     }
 
     public void rellenar(){
@@ -35,11 +35,11 @@ public class Tablero{
         }
     }
 
-    public void moverse(Personaje objetivo, int x, int y){
-        tablero[x][y].personaje = tablero[objetivo.posX][objetivo.posY].personaje;
-        tablero[objetivo.posX][objetivo.posY].personaje = null;
-        objetivo.posX = x;
-        objetivo.posY = y;
+    public void moverZombie(Personaje zombie, int x, int y){
+        tablero[x][y].personaje = zombie;
+        tablero[zombie.posX][zombie.posY].personaje = null;
+        zombie.posX = x;
+        zombie.posY = y;
     }
 
     public void generaSoldados(){
@@ -60,10 +60,10 @@ public class Tablero{
         }
     }
 
-    public void generaZombies(){
+    public void generaZombies(int cantidad){
         int cont = 0;
 
-        while(cont < 6){
+        while(cont < cantidad){
             int x = (int) Math.floor(Math.random()*(9));
             int y = (int) Math.floor(Math.random()*(3));
 
@@ -124,46 +124,55 @@ public class Tablero{
         System.out.println("=============================");
     }
 
-    public void turnoSoldado(){
-
-    }
-
     public void turnoZombie(){
         int cont = 0;
 
         while(cont < zombies.size()){
             Zombie tmp = (Zombie) zombies.get(cont);
 
-            int[] destino = escuchar(tmp);
+            int[] target = objetivoAtaque(tmp);
+
+            if(target != null){
+                Soldado objetivo = (Soldado) tablero[target[0]][target[1]].personaje;
+                tmp.atacar(objetivo);
+                cont++;
+                if(objetivo.vida <= 0){
+                    soldados.remove(tablero[target[0]][target[1]].personaje);
+                    tablero[target[0]][target[1]].personaje = null;
+                }
+                continue;
+            }
+
+            int[] destino = vision(tmp);
 
             if(destino != null){
-                moverse(tmp, destino[0], destino[1]);
+                moverZombie(tmp, destino[0], destino[1]);
                 cont++;
+                System.out.println("Ví algo");
+                System.out.println(destino[0] + ", " + destino[1]);
             }
             else{
-                int[] destino2 = vision(tmp);
+
+                int[] destino2 = escuchar(tmp);
 
                 if(destino2 != null){
-                    moverse(tmp, destino2[0], destino2[1]);
+                    moverZombie(tmp, destino2[0], destino2[1]);
                     cont++;
+                    System.out.println("Escuché algo");
+                    System.out.println(destino2[0] + ", " + destino2[1]);
                 }
 
-                else {
-                    int x = (int) Math.floor(Math.random()*(3-(-3)+1)+(-3));
-                    int y = (int) Math.floor(Math.random()*(3)+1);
+                else{
 
-                    int xFinal = tmp.posX + x;
-                    int yFinal = tmp.posY + y;
-
-                    if(0<=xFinal & xFinal<9 & yFinal<13){
-                        if(tablero[xFinal][yFinal].personaje == null){
-                            this.moverse(tmp, xFinal, yFinal);
-                            cont++;
-                        }
-                    }
+                    moverZombie(tmp, tmp.posX, tmp.posY + 3);
+                    cont++;
+                    System.out.println("Random");
+                    System.out.println(tmp.posX + ", " + tmp.posY);
                 }
 
             }
+
+
         }
     }
 
@@ -220,18 +229,65 @@ public class Tablero{
 
         int[] xy = new int[2];
         boolean visto = false;
+        boolean Soldado = false;
 
         for(int i = 0; i< casillas.size(); i++){
             Casilla tmp = (Casilla) casillas.get(i);
             if(tmp.personaje != null){
-                xy[0] = tmp.posX;
-                xy[1] = tmp.posY;
-                visto = true;
-                break;
+
+                try{
+                    if(tmp.personaje.getClass() == Soldado.class){
+                        Soldado = true;
+                    }
+
+                }catch (NullPointerException e){
+                }
+
+                if(Soldado){
+                    xy[0] = tmp.posX;
+                    xy[1] = tmp.posY;
+                    visto = true;
+                    break;
+                }
             }
         }
 
         if(!visto){
+            xy = null;
+        }
+
+        return xy;
+    }
+
+    public int[] objetivoAtaque(Zombie zombie){
+        LinkedList casillas = this.recorrer(zombie.posX, zombie.posY, zombie.rangoAtaque);
+
+        int[] xy = new int[2];
+        boolean atacable = false;
+        boolean Soldado = false;
+
+        for(int i = 0; i< casillas.size(); i++){
+            Casilla tmp = (Casilla) casillas.get(i);
+            if(tmp.personaje != null){
+
+                try{
+                    if(tmp.personaje.getClass() == Soldado.class){
+                        Soldado = true;
+                    }
+
+                }catch (NullPointerException e){
+                }
+
+                if(Soldado){
+                    xy[0] = tmp.posX;
+                    xy[1] = tmp.posY;
+                    atacable = true;
+                    break;
+                }
+            }
+        }
+
+        if(!atacable){
             xy = null;
         }
 
