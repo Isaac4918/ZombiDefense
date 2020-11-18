@@ -10,6 +10,10 @@ public class Ventana extends JPanel {
     Graphics g1;
     private int clickX;
     private int clickY;
+    public boolean ataque=true;
+    public boolean mover=true;
+    public boolean item=true;
+
     LinkedList <Proyectiles>heroes=new LinkedList();
     public int getSelec_x() {
         return selec_x;
@@ -68,6 +72,13 @@ public class Ventana extends JPanel {
         ImageIcon ak=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/ak.png")).getImage());
         ImageIcon levelup=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/levelup.png")).getImage());
         ImageIcon selec=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/select.png")).getImage());
+        ImageIcon batacar=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/batacar.png")).getImage());
+        ImageIcon iitem=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/item.png")).getImage());
+        ImageIcon imover=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/bmover.png")).getImage());
+        ImageIcon atacarbn=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/atacarbn.png")).getImage());
+        ImageIcon itembn=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/itembn.png")).getImage());
+        ImageIcon moverbn=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/moverbn.png")).getImage());
+
 
 
         g.drawImage(img_fondo.getImage(),0,0,null);
@@ -87,8 +98,40 @@ public class Ventana extends JPanel {
 
 
         //g.drawImage(imgzomb1.getImage(),115,98,null);
-        if (clickX>56 && clickX<574){
 
+
+        //Botones de atacar,moverse y usar item---------
+        if (clickX>643){
+            if(clickY>242 && clickY<342){
+                System.out.println("ataking ratataata");
+                clickX=-100;
+                clickY=-100;
+                ataque=true;
+            }
+            if(clickY>368 && clickY<468){
+                System.out.println("muving");
+                clickX=-100;
+                clickY=-100;
+            }
+            if(clickY>493 && clickY<593){
+                System.out.println("usando itemquisde");
+                clickX=-100;
+                clickY=-100;
+            }
+
+
+        }
+
+
+
+
+        //----------------------------------------------
+
+
+        if (clickX>56 && clickX<574){
+            item=false;
+            mover=false;
+            ataque=false;
             this.mover(0,0);
 
             /* prueba de seleccion de alguna casilla
@@ -127,6 +170,24 @@ public class Ventana extends JPanel {
         }
         g.drawImage(pocion.getImage(),Xtt(0),Ytt(0),null);
 
+        // Gestion de las imagenes de los botones
+
+        if (ataque){
+            g.drawImage(batacar.getImage(),635,212,null);
+        }else{
+            g.drawImage(atacarbn.getImage(),635,212,null);
+        }
+
+        if (mover){
+            g.drawImage(imover.getImage(),635,337,null);
+        }else{
+            g.drawImage(moverbn.getImage(),635,337,null);
+        }
+        if (item){
+            g.drawImage(iitem.getImage(),635,462,null);
+        }else{
+            g.drawImage(itembn.getImage(),635,462,null);
+        }
 
 
         repaint();

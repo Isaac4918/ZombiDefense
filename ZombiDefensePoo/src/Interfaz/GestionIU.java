@@ -21,7 +21,7 @@ public class GestionIU extends JFrame implements MouseListener {
         panel_juego.add(ventana);
 
 
-        ventana.setBounds(0,0,617,700);
+        ventana.setBounds(0,0,855,700);
 
 
 
@@ -30,7 +30,7 @@ public class GestionIU extends JFrame implements MouseListener {
         frm_ventana.setResizable(false);
         frm_ventana.addMouseListener(this);
         frm_ventana.add(panel_juego);
-        frm_ventana.setSize(617,700);
+        frm_ventana.setSize(855,700);
         frm_ventana.setVisible(true);
 
 
@@ -40,7 +40,7 @@ public class GestionIU extends JFrame implements MouseListener {
         ventana.setClickX(e.getX());
         ventana.setClickY(e.getY());
 
-        //System.out.println("equis:"+ventana.getClickX()+"      lle: "+ventana.getClickY());
+        System.out.println("equis:"+ventana.getClickX()+"      lle: "+ventana.getClickY());
         //System.out.println("cuadricula X  "+((ventana.getClickX()-65)/56));
         //System.out.println("cuadricula Y  "+((ventana.getClickY()-36)/50));
 
