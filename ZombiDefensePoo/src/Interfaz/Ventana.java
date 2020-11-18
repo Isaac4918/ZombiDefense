@@ -1,27 +1,32 @@
 package Interfaz;
 
-import Logica.Tablero;
+import Logica.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
-import java.util.Vector;
-import Logica.Tablero;
-import Logica.Zombie;
 
 //ventana puede que tenga metodos que GestionUI le da para actualizar el Juego
 public class Ventana extends JPanel {
     Graphics g1;
     private int clickX;
     private int clickY;
-    public boolean ataque=true;
-    public boolean mover=true;
-    public boolean item=true;
+    public boolean ataque=false;
+    public boolean mover=false;
+    public boolean item=false;
+
+
+    public int[] moving = {-10000, -10000};
+    public boolean atacking = false;
+
+
     Tablero T1 = new Tablero();
 
-    LinkedList <Proyectiles>heroes=new LinkedList();
+    LinkedList <Proyectiles> Heroes =new LinkedList();
+    LinkedList <Proyectiles> Zombies =new LinkedList();
 
     public Ventana() throws InterruptedException {
+        this.obtenerPersonajes();
     }
 
     public int getSelec_x() {
@@ -87,13 +92,13 @@ public class Ventana extends JPanel {
         ImageIcon atacarbn=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/atacarbn.png")).getImage());
         ImageIcon itembn=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/itembn.png")).getImage());
         ImageIcon moverbn=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/moverbn.png")).getImage());
-
+        ImageIcon skipTurno=new ImageIcon(new ImageIcon(getClass().getResource("/Imagenes/bterminar.png")).getImage());
 
 
         g.drawImage(img_fondo.getImage(),0,0,null);
         g.drawImage(selec.getImage(),Xtt(selec_x),Ytt(selec_y),null);
 
-        g.drawImage(bala.getImage(),proyectil.xi,proyectil.yi,null);
+        //g.drawImage(bala.getImage(),proyectil.xi,proyectil.yi,null);
 
 
 
@@ -103,20 +108,29 @@ public class Ventana extends JPanel {
         //g.drawImage(imgzomb1.getImage(),115,98,null);
         //Botones de atacar,moverse y usar item---------
         if (clickX>643){
-            if(clickY>242 && clickY<342){
-                this.transformar(T1.zombies);
+            if(clickY>162 && clickY<262 && ataque){
                 System.out.println("ataking ratataata");
                 clickX=-100;
                 clickY=-100;
                 ataque=true;
             }
-            if(clickY>368 && clickY<468){
+            if(clickY>287 && clickY<387 && mover){
                 System.out.println("muving");
+                this.moving[0] = selec_x;
+                this.moving[1] = selec_y;
+                System.out.println("Soldado " + " | posx: " + this.moving[0] + " | posy: " + this.moving[1]);
                 clickX=-100;
                 clickY=-100;
             }
-            if(clickY>493 && clickY<593){
+            if(clickY>412 && clickY<512 && item){
                 System.out.println("usando itemquisde");
+                clickX=-100;
+                clickY=-100;
+            }
+            if(clickY>537 && clickY<637){
+                this.transformarZombies(T1.zombies);
+                transformarHeroes(T1.soldados);
+                System.out.println("pasado de verga");
                 clickX=-100;
                 clickY=-100;
             }
@@ -131,21 +145,45 @@ public class Ventana extends JPanel {
 
 
         if (clickX>56 && clickX<574){
-            item=false;
-            mover=false;
-            ataque=false;
-            this.mover(0,0);
 
-            /* prueba de seleccion de alguna casilla
-            setSelec_x(Xtt(clickX));
-            setSelec_y(Ytt(clickY));
-            selec_x=(clickX-65)/56;
-            selec_y=(clickY-36)/50;
+            //prueba de seleccion de alguna casilla
+            selec_x=ttX(clickX);
+            selec_y=ttY(clickY);
+
+            if(this.moving[0] > 0 && this.moving[1] > 0){
+                Soldado tmp = (Soldado) T1.tablero[this.moving[0]][this.moving[1]].personaje;
+                T1.moverSoldado(tmp, selec_x, selec_y);
+                transformarHeroes(T1.soldados);
+                this.moving[0] = -10000;
+                this.moving[1] = -10000;
+            }
+
+
+            boolean soldado = false;
+
+            Personaje tmp = T1.tablero[selec_x][selec_y].personaje;
+
+            try{
+                if(tmp.getClass() == Soldado.class){
+                    this.mover = true;
+                    this.ataque = true;
+                    this.item = true;
+                    soldado = true;
+                }
+            }catch (NullPointerException e){
+            }
+
+            if(!soldado){
+                this.mover = false;
+                this.ataque = false;
+                this.item = false;
+            }
+
             System.out.println("en la matriz se va a poner en X: "+Xtt(selec_x)+" y: "+Ytt(selec_y));
             clickX=-100;
             clickY=-100;
 
-            */
+
 
 /*
             // Se prueba el proyectil con coordenadas de inicio y final
@@ -168,44 +206,52 @@ public class Ventana extends JPanel {
 
         //g.drawImage(bala.getImage(),proyectil.xi,proyectil.yi,null);
         //System.out.println("equis :"+proyectil.xi);
-        for(int i=0;i<=heroes.size()-1;i++){
-            Proyectiles h= (Proyectiles) heroes.get(i);
+        for(int i = 0; i<= Zombies.size()-1; i++){
+            Proyectiles h= (Proyectiles) Zombies.get(i);
             Runnable aux = h;
             new Thread(h).start();
             g.drawImage(zomb1.getImage(),h.xi,h.yi,null);
         }
-        g.drawImage(pocion.getImage(),Xtt(0),Ytt(0),null);
+
+        for(int i = 0; i<= Heroes.size()-1; i++){
+            Proyectiles h= (Proyectiles) Heroes.get(i);
+            Runnable aux = h;
+            new Thread(h).start();
+            g.drawImage(tanque.getImage(),h.xi,h.yi,null);
+        }
+
+        //g.drawImage(pocion.getImage(),Xtt(0),Ytt(0),null);
 
         // Gestion de las imagenes de los botones
 
         if (ataque){
-            g.drawImage(batacar.getImage(),635,212,null);
+            g.drawImage(batacar.getImage(),635,162,null);
         }else{
-            g.drawImage(atacarbn.getImage(),635,212,null);
+            g.drawImage(atacarbn.getImage(),635,162,null);
         }
 
         if (mover){
-            g.drawImage(imover.getImage(),635,337,null);
+            g.drawImage(imover.getImage(),635,287,null);
         }else{
-            g.drawImage(moverbn.getImage(),635,337,null);
+            g.drawImage(moverbn.getImage(),635,287,null);
         }
         if (item){
-            g.drawImage(iitem.getImage(),635,462,null);
+            g.drawImage(iitem.getImage(),635,412,null);
         }else{
-            g.drawImage(itembn.getImage(),635,462,null);
+            g.drawImage(itembn.getImage(),635,412,null);
         }
-
+        g.drawImage(skipTurno.getImage(),635,537,null);
 
         repaint();
     }
     public void mover(int dx,int dy){
-        Proyectiles moviendoc=heroes.get(0);
+        Proyectiles moviendoc= Zombies.get(0);
         System.out.println("xi :"+moviendoc.xi);
         moviendoc=new Proyectiles(ttX(moviendoc.xi),ttY(moviendoc.yi),ttX(moviendoc.xi),ttY(moviendoc.yi)-2);
 
         Runnable proceso=moviendoc;
         new Thread(proceso).start();
-        heroes.set(0,moviendoc);
+        Zombies.set(0,moviendoc);
         clickX=-100;
     }
 
@@ -222,8 +268,34 @@ public class Ventana extends JPanel {
         return (y-36)/50;
     }
 
-    public void transformar(LinkedList zombies){
-        this.heroes = new LinkedList();
+
+    public void obtenerPersonajes(){
+        LinkedList Soldados = this.T1.soldados;
+        LinkedList Zombies = this.T1.zombies;
+
+        for(int i = 0; i < Soldados.size(); i++){
+            Soldado tmp = (Soldado) Soldados.get(i);
+            Proyectiles heroe1 = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
+            this.Heroes.add(heroe1);
+        }
+        for(int i = 0; i < Zombies.size(); i++){
+            Zombie tmp = (Zombie) Zombies.get(i);
+            Proyectiles zombie = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
+            this.Zombies.add(zombie);
+        }
+    }
+
+    public void transformarHeroes(LinkedList Soldados){
+        this.Heroes = new LinkedList();
+        for(int i = 0; i < Soldados.size(); i++){
+            Soldado tmp = (Soldado) Soldados.get(i);
+            Proyectiles heroe1 = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
+            this.Heroes.add(heroe1);
+        }
+    }
+
+    public void transformarZombies(LinkedList zombies){
+        this.Zombies = new LinkedList();
         LinkedList aux = new LinkedList();
 
         for(int a = 0; a < zombies.size(); a++){
@@ -231,25 +303,29 @@ public class Ventana extends JPanel {
             Zombie tmp = (Zombie) zombies.get(a);
             xy[0] = tmp.posX;
             xy[1] = tmp.posY;
-            System.out.println("[" + xy[0] + ", " + xy[1] + "]");
+            //System.out.println("[" + xy[0] + ", " + xy[1] + "]");
             aux.add(xy);
         }
 
-        T1.turnoZombie();
+        try {
+            T1.cambiarTurno();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         for(int i = 0; i < zombies.size(); i++){
             Zombie tmp = (Zombie) zombies.get(i);
             int[] xyInicial = (int[]) aux.get(i);
-            System.out.println("============================================");
+            /*System.out.println("============================================");
             System.out.println(xyInicial);
             System.out.println("Largo: " + aux.size());
-            System.out.println("[" + xyInicial[0] + ", " + xyInicial[1] + "]");
+            System.out.println("[" + xyInicial[0] + ", " + xyInicial[1] + "]");*/
             Proyectiles heroe1 = new Proyectiles(xyInicial[0],xyInicial[1],tmp.posX,tmp.posY);
-            this.heroes.add(heroe1);
+            this.Zombies.add(heroe1);
 
         }
 
-        System.out.println("Zombies: " + this.heroes.size());
+        //System.out.println("Zombies: " + this.heroes.size());
 
 
 

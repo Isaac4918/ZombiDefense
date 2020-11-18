@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public class Soldado extends Personaje{
 
-    private Arma arma;
+    public Arma arma = new Arma("Arma Larga", 50, 5,  4);
     Utilidades U = new Utilidades();
 
     public Soldado() {
@@ -26,10 +26,4 @@ public class Soldado extends Personaje{
 
     }
 
-    public void atacar(Personaje objetivo){
-        float distance = U.distancia(this.posX, this.posY, objetivo.posX, objetivo.posY);
-        if(arma.rangoAtaque >= distance){
-            objetivo.recibirDmg(this.arma.damage);
-        }
-    }
 }

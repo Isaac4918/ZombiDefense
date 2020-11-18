@@ -2,12 +2,12 @@ package Logica;
 
 public class Casilla {
 
-    Personaje personaje;
-    Item item;
-    Boolean obstaculo;
-    Boolean ruido = false;
-    int posX;
-    int posY;
+    public Personaje personaje;
+    public Item item;
+    public Boolean obstaculo;
+    public Boolean ruido = false;
+    public int posX;
+    public int posY;
 
     public Casilla() {
     }

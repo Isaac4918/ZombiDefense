@@ -46,10 +46,10 @@ public class Proyectiles  extends JPanel implements Runnable {
     int yf;
 
     public Proyectiles(int xi, int yi, int xf, int yf) {
-        this.xi=(xi*56)+65;
-        this.yi=(yi*50)+36;
-        this.xf=(xf*56)+65;
-        this.yf=(yf*50)+36;
+        this.xi=(xi*57)+50;
+        this.yi=(yi*50)+1;
+        this.xf=(xf*57)+50;
+        this.yf=(yf*50)+1;
 
     }
 
@@ -73,7 +73,7 @@ public class Proyectiles  extends JPanel implements Runnable {
                 }if (yi>yf){
                     setYi(yi-1);
                 }
-                Thread.sleep(1500);
+                Thread.sleep(1700);
             }
 
         } catch (InterruptedException e) {

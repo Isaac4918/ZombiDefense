@@ -13,16 +13,46 @@ public class Tablero{
         rellenar();
         generaSoldados();
         generaZombies(3);
-        //mostrar();
+        cambiarTurno();
+    }
 
-        /*while(true){
-            Thread.sleep(3000);
-            if(turno%2 == 0){
-                turnoZombie();
-                mostrar();
+    //=============================================================Manejo del juego==========================================================
+
+    public void cambiarTurno() throws InterruptedException {
+        if(turno == 0){
+            turno = 1;
+        }
+        else if(turno == 1){
+            turnoZombie();
+            for(int i = 0; i < 9; i++){
+                for(int j = 0; j < 13; j++){
+                    this.tablero[i][j].ruido = false;
+                }
             }
-            turno++;
-        }*/
+            turno = 0;
+            Thread.sleep(1000);
+            cambiarTurno();
+        }
+    }
+
+    public LinkedList recorrer(int x,int y,int rango){
+        LinkedList casillas=new LinkedList();
+        for (int i=x-rango;i<=x+rango;i++){
+            if (i>=9 || i<=-1){
+                continue;
+            }
+            for (int j=y-rango;j<=y+rango;j++){
+                if (j>=13 || j<=-1){
+                    continue;
+                }
+                Casilla tmp = tablero[i][j];
+                if (i==x && i==j){
+                    continue;
+                }
+                casillas.add(tmp);
+            }
+        }
+        return casillas;
     }
 
     public void rellenar(){
@@ -32,57 +62,6 @@ public class Tablero{
                 tmp.posX = i;
                 tmp.posY = j;
                 this.tablero[i][j] = tmp;
-            }
-        }
-    }
-
-    public void moverZombie(Personaje zombie, int x, int y){
-        if(tablero[x][y].personaje == null){
-            tablero[x][y].personaje = zombie;
-            tablero[zombie.posX][zombie.posY].personaje = null;
-            zombie.posX = x;
-            zombie.posY = y;
-        }else {
-            moverZombie(zombie, x, y-1);
-            /*tablero[x][y-1].personaje = zombie;
-            tablero[zombie.posX][zombie.posY].personaje = null;
-            zombie.posX = x;
-            zombie.posY = y-1;*/
-        }
-    }
-
-    public void generaSoldados(){
-        int cont = 0;
-
-        while(cont < 3){
-            int x = ((cont+1) * 3)-1;
-            int y = (int) Math.floor(Math.random()*(12-10+1)+10);
-
-            if(tablero[x][y].personaje == null) {
-                Soldado tmp = new Soldado();
-                tablero[x][y].personaje = tmp;
-                tmp.posX = x;
-                tmp.posY = y;
-                this.soldados.add(tmp);
-                cont++;
-            }
-        }
-    }
-
-    public void generaZombies(int cantidad){
-        int cont = 0;
-
-        while(cont < cantidad){
-            int x = (int) Math.floor(Math.random()*(9));
-            int y = 0;
-
-            if(tablero[x][y].personaje == null) {
-                Zombie tmp = new Zombie();
-                tablero[x][y].personaje = tmp;
-                tmp.posX = x;
-                tmp.posY = y;
-                this.zombies.add(tmp);
-                cont++;
             }
         }
     }
@@ -102,7 +81,7 @@ public class Tablero{
                     }
 
                 }catch (NullPointerException e){
-                        Soldado = false;
+                    Soldado = false;
                 }
 
                 try{
@@ -133,6 +112,85 @@ public class Tablero{
         System.out.println("=============================");
     }
 
+    //================================================================Soldados================================================================
+
+
+    public void generaSoldados(){
+        int cont = 0;
+
+        while(cont < 3){
+            int x = ((cont+1) * 3)-1;
+            int y = (int) Math.floor(Math.random()*(12-10+1)+10);
+
+            if(tablero[x][y].personaje == null) {
+                Soldado tmp = new Soldado();
+                tablero[x][y].personaje = tmp;
+                tmp.posX = x;
+                tmp.posY = y;
+                this.soldados.add(tmp);
+                cont++;
+            }
+        }
+    }
+
+    public void moverSoldado(Soldado actual, int xFinal, int yFinal){
+
+        float distancia = U.distancia(actual.posX, actual.posY, xFinal, yFinal);
+
+        if(actual.rangoMovimiento >= distancia){
+            if(tablero[xFinal][yFinal].personaje == null){
+                tablero[xFinal][yFinal].personaje = actual;
+                tablero[actual.posX][actual.posY].personaje = null;
+                actual.posX = xFinal;
+                actual.posY = yFinal;
+            }else {
+                System.out.println("Posición ocupada");
+            }
+        }
+        else{
+            System.out.println("Fuera del rango de movimiento");
+        }
+
+        mostrar();
+
+
+
+    }
+
+    public void ataqueSolado(Soldado actual, Zombie objetivo){
+        float distance = U.distancia(actual.posX, actual.posY, objetivo.posX, objetivo.posY);
+        if(actual.arma.rangoAtaque >= distance){
+            objetivo.recibirDmg(actual.arma.damage);
+            LinkedList extenderRuido = recorrer(actual.posX, actual.posY, actual.arma.ruido);
+            for(int i = 0; i < extenderRuido.size(); i++){
+                Casilla tmp = (Casilla) extenderRuido.get(i);
+                tmp.ruido = true;
+            }
+
+        }
+    }
+
+
+    //================================================================Zombies=================================================================
+
+    public void generaZombies(int cantidad){
+        int cont = 0;
+
+        while(cont < cantidad){
+            int x = (int) Math.floor(Math.random()*(9));
+            int y = 0;
+
+            if(tablero[x][y].personaje == null) {
+                Zombie tmp = new Zombie();
+                tablero[x][y].personaje = tmp;
+                tmp.posX = x;
+                tmp.posY = y;
+                this.zombies.add(tmp);
+                cont++;
+            }
+        }
+    }
+
     public void turnoZombie(){
 
         //System.out.println("Largo de zombies: " + this.zombies.size());
@@ -160,8 +218,8 @@ public class Tablero{
             if(destino != null){
                 moverZombie(tmp, destino[0], destino[1]);
                 cont++;
-                /*System.out.println("Ví algo");
-                System.out.println(destino[0] + ", " + destino[1]);*/
+                System.out.println("Ví algo");
+                System.out.println(destino[0] + ", " + destino[1]);
             }
             else{
 
@@ -170,43 +228,47 @@ public class Tablero{
                 if(destino2 != null){
                     moverZombie(tmp, destino2[0], destino2[1]);
                     cont++;
-                    /*System.out.println("Escuché algo");
-                    System.out.println(destino2[0] + ", " + destino2[1]);*/
+                    System.out.println("Escuché algo");
+                    System.out.println(destino2[0] + ", " + destino2[1]);
                 }
 
                 else{
 
-                    moverZombie(tmp, tmp.posX, tmp.posY + 3);
+                    moverZombie(tmp, tmp.posX, tmp.posY + 2);
                     cont++;
-                    /*System.out.println("Random");
-                    System.out.println(tmp.posX + ", " + tmp.posY);*/
+                    System.out.println("Random");
+                    System.out.println(tmp.posX + ", " + tmp.posY);
                 }
 
             }
 
-
-
         }
+        this.mostrar();
     }
 
-    public LinkedList recorrer(int x,int y,int rango){
-        LinkedList casillas=new LinkedList();
-        for (int i=x-rango;i<=x+rango;i++){
-            if (i>=9 || i<=-1){
-                continue;
+    public void moverZombie(Personaje zombie, int x, int y){
+        if(y<13){
+            if(tablero[x][y].personaje == null){
+                tablero[x][y].personaje = zombie;
+                tablero[zombie.posX][zombie.posY].personaje = null;
+                zombie.posX = x;
+                zombie.posY = y;
+            }else {
+                moverZombie(zombie, x, y-1);
             }
-            for (int j=y-rango;j<=y+rango;j++){
-                if (j>=13 || j<=-1){
-                    continue;
-                }
-                Casilla tmp = tablero[i][j];
-                if (i==x && i==j){
-                    continue;
-                }
-                casillas.add(tmp);
+        }else{
+
+            if(tablero[x][12].personaje == null){
+                tablero[x][12].personaje = zombie;
+                tablero[zombie.posX][zombie.posY].personaje = null;
+                zombie.posX = x;
+                zombie.posY = y;
             }
+            this.zombies.remove(tablero[x][12].personaje);
+            tablero[x][12].personaje = null;
+
+
         }
-        return casillas;
     }
 
     public int[] escuchar(Zombie zombie){
