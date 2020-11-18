@@ -1,9 +1,13 @@
 package Interfaz;
 
+import Logica.Tablero;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.Vector;
+import Logica.Tablero;
+import Logica.Zombie;
 
 //ventana puede que tenga metodos que GestionUI le da para actualizar el Juego
 public class Ventana extends JPanel {
@@ -13,8 +17,13 @@ public class Ventana extends JPanel {
     public boolean ataque=true;
     public boolean mover=true;
     public boolean item=true;
+    Tablero T1 = new Tablero();
 
     LinkedList <Proyectiles>heroes=new LinkedList();
+
+    public Ventana() throws InterruptedException {
+    }
+
     public int getSelec_x() {
         return selec_x;
     }
@@ -86,23 +95,16 @@ public class Ventana extends JPanel {
 
         g.drawImage(bala.getImage(),proyectil.xi,proyectil.yi,null);
 
-        Proyectiles heroe1=new Proyectiles(1,9,1,9);
-        Proyectiles heroe2=new Proyectiles(5,9,5,9);
-        Proyectiles heroe3=new Proyectiles(7,9,7,9);
 
-        heroes.add(heroe1);
-        heroes.add(heroe2);
-        heroes.add(heroe3);
 
 
 
 
         //g.drawImage(imgzomb1.getImage(),115,98,null);
-
-
         //Botones de atacar,moverse y usar item---------
         if (clickX>643){
             if(clickY>242 && clickY<342){
+                this.transformar(T1.zombies);
                 System.out.println("ataking ratataata");
                 clickX=-100;
                 clickY=-100;
@@ -162,11 +164,15 @@ public class Ventana extends JPanel {
 
 
         }
+
+
         //g.drawImage(bala.getImage(),proyectil.xi,proyectil.yi,null);
         //System.out.println("equis :"+proyectil.xi);
         for(int i=0;i<=heroes.size()-1;i++){
             Proyectiles h= (Proyectiles) heroes.get(i);
-            g.drawImage(tanque.getImage(),h.xi,h.yi,null);
+            Runnable aux = h;
+            new Thread(h).start();
+            g.drawImage(zomb1.getImage(),h.xi,h.yi,null);
         }
         g.drawImage(pocion.getImage(),Xtt(0),Ytt(0),null);
 
@@ -214,6 +220,40 @@ public class Ventana extends JPanel {
     }
     public int ttY(int y){
         return (y-36)/50;
+    }
+
+    public void transformar(LinkedList zombies){
+        this.heroes = new LinkedList();
+        LinkedList aux = new LinkedList();
+
+        for(int a = 0; a < zombies.size(); a++){
+            int[] xy = new int[2];
+            Zombie tmp = (Zombie) zombies.get(a);
+            xy[0] = tmp.posX;
+            xy[1] = tmp.posY;
+            System.out.println("[" + xy[0] + ", " + xy[1] + "]");
+            aux.add(xy);
+        }
+
+        T1.turnoZombie();
+
+        for(int i = 0; i < zombies.size(); i++){
+            Zombie tmp = (Zombie) zombies.get(i);
+            int[] xyInicial = (int[]) aux.get(i);
+            System.out.println("============================================");
+            System.out.println(xyInicial);
+            System.out.println("Largo: " + aux.size());
+            System.out.println("[" + xyInicial[0] + ", " + xyInicial[1] + "]");
+            Proyectiles heroe1 = new Proyectiles(xyInicial[0],xyInicial[1],tmp.posX,tmp.posY);
+            this.heroes.add(heroe1);
+
+        }
+
+        System.out.println("Zombies: " + this.heroes.size());
+
+
+
+
     }
 
 

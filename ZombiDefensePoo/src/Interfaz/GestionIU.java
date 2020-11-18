@@ -12,7 +12,7 @@ public class GestionIU extends JFrame implements MouseListener {
     Ventana ventana=new Ventana();
     LinkedList heroes=new LinkedList();
 
-    public GestionIU(){
+    public GestionIU() throws InterruptedException {
 
 
         frm_ventana=new JFrame();

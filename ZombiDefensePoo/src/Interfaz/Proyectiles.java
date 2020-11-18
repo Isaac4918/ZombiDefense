@@ -56,24 +56,24 @@ public class Proyectiles  extends JPanel implements Runnable {
     @Override
     public void run() {
 
-        System.out.println("yi: "+yi+ "    yf: "+yf);
+        //System.out.println("yi: "+yi+ "    yf: "+yf);
 
         try {
             while ((xi!=xf) || (yi!=yf)){
 
                 if (xi<xf){
                     setXi(xi+1);
-                    System.out.println("Equis de bala"+xi);
+                    //System.out.println("Equis de bala"+xi);
                 }if (xi>xf){
                     setXi(xi-1);
                 }
                 if (yi<yf){
                     setYi(yi+1);
-                    System.out.println("Y actual: "+yi);
+                    //System.out.println("Y actual: "+yi);
                 }if (yi>yf){
                     setYi(yi-1);
                 }
-                Thread.sleep(1);
+                Thread.sleep(1500);
             }
 
         } catch (InterruptedException e) {

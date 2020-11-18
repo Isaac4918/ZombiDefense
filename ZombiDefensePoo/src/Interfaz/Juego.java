@@ -35,8 +35,11 @@ public class Juego extends Thread {
         //Thread logica=new Thread((Runnable) new GestionIU());
         //logica.run();
 
-        GestionIU gestiu=new GestionIU();
-
+        try {
+            GestionIU gestiu=new GestionIU();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
 
     }
