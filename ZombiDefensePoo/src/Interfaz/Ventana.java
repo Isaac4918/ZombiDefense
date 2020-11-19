@@ -14,6 +14,8 @@ public class Ventana extends JPanel {
     public boolean ataque=false;
     public boolean mover=false;
     public boolean item=false;
+    public String label_vida="";
+    public String label_ataque;
 
 
     public int[] moving = {-10000, -10000};
@@ -25,8 +27,12 @@ public class Ventana extends JPanel {
     LinkedList <Proyectiles> Heroes =new LinkedList();
     LinkedList <Proyectiles> Zombies =new LinkedList();
 
+
+
     public Ventana() throws InterruptedException {
         this.obtenerPersonajes();
+        //label_vida.setFont(new Font("Franklin Gothic Heavy", Font.PLAIN, 14));
+
     }
 
     public int getSelec_x() {
@@ -97,7 +103,7 @@ public class Ventana extends JPanel {
 
         g.drawImage(img_fondo.getImage(),0,0,null);
         g.drawImage(selec.getImage(),Xtt(selec_x),Ytt(selec_y),null);
-
+        g.drawString(label_vida,635,100);
         //g.drawImage(bala.getImage(),proyectil.xi,proyectil.yi,null);
 
 
@@ -168,6 +174,7 @@ public class Ventana extends JPanel {
                     this.mover = true;
                     this.ataque = true;
                     this.item = true;
+                    label_vida="Vida: "+tmp.vida;
                     soldado = true;
                 }
             }catch (NullPointerException e){
