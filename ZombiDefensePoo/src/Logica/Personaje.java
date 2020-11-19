@@ -2,14 +2,13 @@ package Logica;
 
 import java.util.LinkedList;
 
-public class Personaje implements Runnable{
+public class Personaje{
 
     public int vida = 100;
     public int posX = 0;
     public int posY = 0;
     public int nivel = 1;
     public int rangoMovimiento = 3;
-    public LinkedList habilidades = new LinkedList();
     public LinkedList items = new LinkedList();
     public String tipo = "";
 
@@ -28,9 +27,4 @@ public class Personaje implements Runnable{
         this.vida -= damage;
     }
 
-
-    @Override
-    public void run() {
-
-    }
 }

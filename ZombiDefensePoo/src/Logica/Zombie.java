@@ -19,7 +19,12 @@ public class Zombie extends Personaje{
         this.damage = damage;
     }
 
-    public void soltarObjeto(){
+    public void soltarObjeto(LinkedList items, Casilla[][] tablero){
+        int indice = (int) Math.floor(Math.random()*(items.size()));
+
+        Item tmp = (Item) items.get(indice);
+        Casilla casillaActual = tablero[this.posX][this.posY];
+        casillaActual.item = tmp;
 
     }
 

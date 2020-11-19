@@ -7,12 +7,14 @@ public class Tablero{
     public int turno = 0;
     public LinkedList soldados = new LinkedList();
     public LinkedList zombies = new LinkedList();
+    public LinkedList items = new LinkedList();
     public Utilidades U = new Utilidades();
 
-    int cantidad = 3;
+    public int cantidad = 3;
 
     public Tablero() throws InterruptedException {
         rellenar();
+        generaItem();
         generaObstaculos(4);
         generaSoldados();
         generaZombies(this.cantidad);
@@ -24,13 +26,21 @@ public class Tablero{
     public void cambiarTurno() throws InterruptedException {
         if(turno == 0){
             turno = 1;
+            if(this.zombies.size() == 0){
+                for(int i = 0; i< this.soldados.size(); i++){
+                    Soldado tmp = (Soldado) soldados.get(i);
+                    tmp.subirNivel();
+                }
+            }
         }
         else if(turno == 1){
-            turnoZombie();
-            if(this.zombies.size() == 0){
-                this.cantidad++;
-                generaZombies(cantidad);
+            for(int i = 0; i< this.soldados.size(); i++){
+                Soldado tmp = (Soldado) soldados.get(i);
+                tmp.movio = false;
+                tmp.ataco = false;
+                tmp.usoItem = false;
             }
+            turnoZombie();
             for(int i = 0; i < 9; i++){
                 for(int j = 0; j < 13; j++){
                     this.tablero[i][j].ruido = false;
@@ -119,6 +129,13 @@ public class Tablero{
         System.out.println("=============================");
     }
 
+    public void generaItem(){
+        Pocion pocion = new Pocion("Poción", 25);
+        LevelUp level = new LevelUp("Level", 1);
+        this.items.add(pocion);
+        this.items.add(level);
+    }
+
     public void generaObstaculos(int cantidad){
         int cont = 0;
         while (cont < cantidad){
@@ -177,11 +194,35 @@ public class Tablero{
         float distancia = U.distancia(actual.posX, actual.posY, xFinal, yFinal);
 
         if(actual.rangoMovimiento >= distancia){
-            if(tablero[xFinal][yFinal].personaje == null && tablero[xFinal][yFinal].obstaculo == 0){
-                tablero[xFinal][yFinal].personaje = actual;
-                tablero[actual.posX][actual.posY].personaje = null;
-                actual.posX = xFinal;
-                actual.posY = yFinal;
+            if(tablero[xFinal][yFinal].personaje == null){
+                if(tablero[xFinal][yFinal].obstaculo == 0){
+                    tablero[xFinal][yFinal].personaje = actual;
+                    tablero[actual.posX][actual.posY].personaje = null;
+                    actual.posX = xFinal;
+                    actual.posY = yFinal;
+                    actual.movio = true;
+                    if(tablero[xFinal][yFinal].item != null){
+                        actual.recogeItem(tablero[xFinal][yFinal].item);
+                        tablero[xFinal][yFinal].item = null;
+                    }
+                }
+                if(tablero[xFinal][yFinal].obstaculo != 0){
+                    if(actual.escalar){
+                        tablero[xFinal][yFinal].personaje = actual;
+                        tablero[actual.posX][actual.posY].personaje = null;
+                        actual.posX = xFinal;
+                        actual.posY = yFinal;
+                        actual.movio = true;
+                        if(tablero[xFinal][yFinal].item != null){
+                            actual.recogeItem(tablero[xFinal][yFinal].item);
+                            tablero[xFinal][yFinal].item = null;
+                        }
+                    }else{
+                        System.out.println("Hay un obstáculo");
+                    }
+                }
+
+
             }else {
                 System.out.println("Posición ocupada");
             }
@@ -189,8 +230,6 @@ public class Tablero{
         else{
             System.out.println("Fuera del rango de movimiento");
         }
-
-        mostrar();
 
 
 
@@ -200,9 +239,16 @@ public class Tablero{
         float distance = U.distancia(actual.posX, actual.posY, objetivo.posX, objetivo.posY);
         if(actual.arma.rangoAtaque >= distance){
             objetivo.recibirDmg(actual.arma.damage);
+            actual.ataco = true;
             if(objetivo.vida <= 0){
+                int chanceItem = (int) Math.floor(Math.random()*(101));
+                if(chanceItem < 100){
+                    objetivo.soltarObjeto(this.items, this.tablero);
+                }
                 zombies.remove(tablero[objetivo.posX][objetivo.posY].personaje);
                 tablero[objetivo.posX][objetivo.posY].personaje = null;
+
+
             }
             LinkedList extenderRuido = recorrer(actual.posX, actual.posY, actual.arma.ruido);
             for(int i = 0; i < extenderRuido.size(); i++){
@@ -211,6 +257,7 @@ public class Tablero{
             }
 
         }
+
     }
 
 

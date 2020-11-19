@@ -122,12 +122,10 @@ public class Ventana extends JPanel {
         if (clickX>643){
             if(clickY>162 && clickY<262 && ataque){
                 System.out.println("ataking ratataata");
-                this.Balas = new LinkedList();
                 this.attacking[0] = selec_x;
                 this.attacking[1] = selec_y;
                 clickX=-100;
                 clickY=-100;
-                ataque=true;
             }
             if(clickY>287 && clickY<387 && mover){
                 System.out.println("muving");
@@ -139,10 +137,16 @@ public class Ventana extends JPanel {
             }
             if(clickY>412 && clickY<512 && item){
                 System.out.println("usando itemquisde");
+                Soldado tmp = (Soldado) T1.tablero[selec_x][selec_y].personaje;
+                tmp.usaItem();
                 clickX=-100;
                 clickY=-100;
             }
             if(clickY>537 && clickY<637){
+                if(this.Zombies.size() == 0){
+                    T1.cantidad++;
+                    T1.generaZombies(T1.cantidad);
+                }
                 this.transformarZombies(T1.zombies);
                 transformarHeroes(T1.soldados);
                 System.out.println("pasado de verga");
@@ -202,6 +206,15 @@ public class Ventana extends JPanel {
                     label_ataque="Ataque: "+((Soldado) tmp).arma.damage;
                     label_nivel="Nivel: "+tmp.nivel;
                     label_rango="Rango de movimiento : "+tmp.rangoMovimiento;
+                    if(((Soldado) tmp).ataco){
+                        ataque = false;
+                    }
+                    if(((Soldado) tmp).movio){
+                        mover = false;
+                    }
+                    if(((Soldado) tmp).usoItem){
+                        item = false;
+                    }
                     soldado = true;
                 }
             }catch (NullPointerException e){
@@ -312,6 +325,22 @@ public class Ventana extends JPanel {
             }
         }
 
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 13; j++){
+                Casilla tmp = T1.tablero[i][j];
+                if(tmp.item != null){
+                    String obs = tmp.item.tipo;
+                    if (obs=="Poción"){
+                        g.drawImage(pocion.getImage(),Xtt(tmp.posX),Ytt(tmp.posY),null);
+                    }
+                    if (obs=="Level"){
+                        g.drawImage(levelup.getImage(),Xtt(tmp.posX),Ytt(tmp.posY),null);
+                    }
+                }
+
+            }
+        }
+
         //g.drawImage(pocion.getImage(),Xtt(0),Ytt(0),null);
 
         // Gestion de las imagenes de los botones
@@ -336,16 +365,7 @@ public class Ventana extends JPanel {
 
         repaint();
     }
-    public void mover(int dx,int dy){
-        Proyectiles moviendoc= Zombies.get(0);
-        System.out.println("xi :"+moviendoc.xi);
-        moviendoc=new Proyectiles(ttX(moviendoc.xi),ttY(moviendoc.yi),ttX(moviendoc.xi),ttY(moviendoc.yi)-2);
 
-        Runnable proceso=moviendoc;
-        new Thread(proceso).start();
-        Zombies.set(0,moviendoc);
-        clickX=-100;
-    }
 
     public int Xtt(int x){
         return ((x*57)+50);
