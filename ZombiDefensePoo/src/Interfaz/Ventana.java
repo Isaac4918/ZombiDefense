@@ -255,12 +255,26 @@ public class Ventana extends JPanel {
             Proyectiles h= (Proyectiles) Zombies.get(i);
             Runnable aux = h;
             new Thread(h).start();
-            g.drawImage(zomb1.getImage(),h.xi,h.yi,null);
+
+            if(h.tipo == "Tanque"){
+                g.drawImage(zomb1.getImage(),h.xi,h.yi,null);
+            }
+            if(h.tipo == "Corredor"){
+                g.drawImage(zomb2.getImage(),h.xi,h.yi,null);
+            }
+            if(h.tipo == "Berserker"){
+                g.drawImage(zomb3.getImage(),h.xi,h.yi,null);
+            }
+
         }
 
         for(int i = 0; i<= Balas.size()-1; i++){
             Proyectiles h= (Proyectiles) Balas.get(i);
             Runnable aux = h;
+            if (h.xi==h.xf && h.yi==h.yf){
+                h.xi=-1000;
+                h.xf=-1000;
+            }
             new Thread(h).start();
             g.drawImage(bala.getImage(),h.xi,h.yi,null);
         }
@@ -269,7 +283,33 @@ public class Ventana extends JPanel {
             Proyectiles h= (Proyectiles) Heroes.get(i);
             Runnable aux = h;
             new Thread(h).start();
-            g.drawImage(tanque.getImage(),h.xi,h.yi,null);
+
+            if(h.tipo == "Tanque"){
+                g.drawImage(tanque.getImage(),h.xi,h.yi,null);
+            }
+            if(h.tipo == "Francotirador"){
+                g.drawImage(sniper.getImage(),h.xi,h.yi,null);
+            }
+            if(h.tipo == "Explorador"){
+                g.drawImage(explorer.getImage(),h.xi,h.yi,null);
+            }
+        }
+
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 13; j++){
+                Casilla tmp = T1.tablero[i][j];
+                int obs=tmp.obstaculo;
+
+                if (obs==1){
+                    g.drawImage(carro.getImage(), Xtt(tmp.posX),Ytt(tmp.posY),null);
+                }
+                if (obs==2){
+                    g.drawImage(carro2.getImage(), Xtt(tmp.posX),Ytt(tmp.posY),null);
+                }
+                if (obs==3){
+                    g.drawImage(barrera.getImage(), Xtt(tmp.posX),Ytt(tmp.posY),null);
+                }
+            }
         }
 
         //g.drawImage(pocion.getImage(),Xtt(0),Ytt(0),null);
@@ -328,11 +368,13 @@ public class Ventana extends JPanel {
         for(int i = 0; i < Soldados.size(); i++){
             Soldado tmp = (Soldado) Soldados.get(i);
             Proyectiles heroe1 = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
+            heroe1.tipo = tmp.tipo;
             this.Heroes.add(heroe1);
         }
         for(int i = 0; i < Zombies.size(); i++){
             Zombie tmp = (Zombie) Zombies.get(i);
             Proyectiles zombie = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
+            zombie.tipo = tmp.tipo;
             this.Zombies.add(zombie);
         }
     }
@@ -342,6 +384,7 @@ public class Ventana extends JPanel {
         for(int i = 0; i < Soldados.size(); i++){
             Soldado tmp = (Soldado) Soldados.get(i);
             Proyectiles heroe1 = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
+            heroe1.tipo = tmp.tipo;
             this.Heroes.add(heroe1);
         }
     }
@@ -351,6 +394,7 @@ public class Ventana extends JPanel {
         for(int i = 0; i < listaZombies.size(); i++){
             Zombie tmp = (Zombie) listaZombies.get(i);
             Proyectiles zombie = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
+            zombie.tipo = tmp.tipo;
             this.Zombies.add(zombie);
         }
     }
@@ -382,6 +426,7 @@ public class Ventana extends JPanel {
             System.out.println("Largo: " + aux.size());
             System.out.println("[" + xyInicial[0] + ", " + xyInicial[1] + "]");*/
             Proyectiles heroe1 = new Proyectiles(xyInicial[0],xyInicial[1],tmp.posX,tmp.posY);
+            heroe1.tipo = tmp.tipo;
             this.Zombies.add(heroe1);
 
         }

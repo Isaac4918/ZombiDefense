@@ -9,6 +9,7 @@ import java.util.TimerTask;
 public class Proyectiles  extends JPanel implements Runnable {
     int xi;
     int yi;
+    String tipo = "";
 
     public int getXi() {
         return xi;

@@ -11,6 +11,14 @@ public class Zombie extends Personaje{
     public Zombie() {
     }
 
+    public Zombie(int vida, int posX, int posY, int rangoMovimiento, int rangoAtaque, int rangoEscucha, int rangoVision, int damage) {
+        super(vida, posX, posY, rangoMovimiento);
+        this.rangoAtaque = rangoAtaque;
+        this.rangoEscucha = rangoEscucha;
+        this.rangoVision = rangoVision;
+        this.damage = damage;
+    }
+
     public void soltarObjeto(){
 
     }

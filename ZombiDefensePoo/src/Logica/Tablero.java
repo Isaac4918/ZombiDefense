@@ -9,10 +9,13 @@ public class Tablero{
     public LinkedList zombies = new LinkedList();
     public Utilidades U = new Utilidades();
 
+    int cantidad = 3;
+
     public Tablero() throws InterruptedException {
         rellenar();
+        generaObstaculos(4);
         generaSoldados();
-        generaZombies(3);
+        generaZombies(this.cantidad);
         cambiarTurno();
     }
 
@@ -24,6 +27,10 @@ public class Tablero{
         }
         else if(turno == 1){
             turnoZombie();
+            if(this.zombies.size() == 0){
+                this.cantidad++;
+                generaZombies(cantidad);
+            }
             for(int i = 0; i < 9; i++){
                 for(int j = 0; j < 13; j++){
                     this.tablero[i][j].ruido = false;
@@ -112,6 +119,19 @@ public class Tablero{
         System.out.println("=============================");
     }
 
+    public void generaObstaculos(int cantidad){
+        int cont = 0;
+        while (cont < cantidad){
+            int x = (int) Math.floor(Math.random()*(9));
+            int y = (int) Math.floor(Math.random()*(13));
+
+            int obs = (int) Math.floor(Math.random()*(4));
+            this.tablero[x][y].obstaculo = obs;
+            cont++;
+        }
+
+    }
+
     //================================================================Soldados================================================================
 
 
@@ -122,13 +142,32 @@ public class Tablero{
             int x = ((cont+1) * 3)-1;
             int y = (int) Math.floor(Math.random()*(12-10+1)+10);
 
-            if(tablero[x][y].personaje == null) {
-                Soldado tmp = new Soldado();
-                tablero[x][y].personaje = tmp;
-                tmp.posX = x;
-                tmp.posY = y;
-                this.soldados.add(tmp);
-                cont++;
+            if(tablero[x][y].personaje == null && tablero[x][y].obstaculo == 0) {
+
+                if(cont == 0){
+                    Arma weapon = new Arma("Arma Corta", 60, 1, 1);
+                    Soldado tmp = new Soldado(160, x, y, 3, weapon);
+                    tmp.tipo = "Tanque";
+                    tablero[x][y].personaje = tmp;
+                    this.soldados.add(tmp);
+                    cont++;
+
+                }else if(cont == 1){
+                    Arma weapon = new Arma("Arma Larga", 70, 6, 6);
+                    Soldado tmp = new Soldado(75, x, y, 4, weapon);
+                    tmp.tipo = "Francotirador";
+                    tablero[x][y].personaje = tmp;
+                    this.soldados.add(tmp);
+                    cont++;
+
+                }else if(cont == 2){
+                    Arma weapon = new Arma("Arma media", 35, 4, 4);
+                    Soldado tmp = new Soldado(100, x, y, 5, weapon);
+                    tmp.tipo = "Explorador";
+                    tablero[x][y].personaje = tmp;
+                    this.soldados.add(tmp);
+                    cont++;
+                }
             }
         }
     }
@@ -138,7 +177,7 @@ public class Tablero{
         float distancia = U.distancia(actual.posX, actual.posY, xFinal, yFinal);
 
         if(actual.rangoMovimiento >= distancia){
-            if(tablero[xFinal][yFinal].personaje == null){
+            if(tablero[xFinal][yFinal].personaje == null && tablero[xFinal][yFinal].obstaculo == 0){
                 tablero[xFinal][yFinal].personaje = actual;
                 tablero[actual.posX][actual.posY].personaje = null;
                 actual.posX = xFinal;
@@ -184,13 +223,32 @@ public class Tablero{
             int x = (int) Math.floor(Math.random()*(9));
             int y = 0;
 
-            if(tablero[x][y].personaje == null) {
-                Zombie tmp = new Zombie();
-                tablero[x][y].personaje = tmp;
-                tmp.posX = x;
-                tmp.posY = y;
-                this.zombies.add(tmp);
-                cont++;
+            if(tablero[x][y].personaje == null && tablero[x][y].obstaculo == 0) {
+
+                if(cont == 0 || cont == 3 || cont == 6){
+
+                    Zombie tmp = new Zombie(150, x, y, 2, 1, 3, 5, 60);
+                    tmp.tipo = "Tanque";
+                    tablero[x][y].personaje = tmp;
+                    this.zombies.add(tmp);
+                    cont++;
+
+                }else if(cont == 1 || cont == 4 || cont == 7){
+                    Zombie tmp = new Zombie(70, x, y, 5, 1, 2, 4, 40);
+                    tmp.tipo = "Corredor";
+                    tablero[x][y].personaje = tmp;
+                    this.zombies.add(tmp);
+                    cont++;
+
+                }else if(cont == 2 || cont == 5 || cont == 8){
+                    Zombie tmp = new Zombie(100, x, y, 3, 2, 4, 5, 70);
+                    tmp.tipo = "Berserker";
+                    tablero[x][y].personaje = tmp;
+                    this.zombies.add(tmp);
+                    cont++;
+                }
+
+
             }
         }
     }
@@ -270,7 +328,7 @@ public class Tablero{
         }
 
         if(zombie.rangoMovimiento >= dist){
-            if(tablero[xf][yf].personaje == null){
+            if(tablero[xf][yf].personaje == null && tablero[xf][yf].obstaculo == 0){
                 while ((xi!=xf) || (yi!=yf)){
 
                     if (xi<xf){

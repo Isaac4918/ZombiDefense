@@ -9,8 +9,9 @@ public class Personaje implements Runnable{
     public int posY = 0;
     public int nivel = 1;
     public int rangoMovimiento = 3;
-    LinkedList habilidades = new LinkedList();
-    LinkedList items = new LinkedList();
+    public LinkedList habilidades = new LinkedList();
+    public LinkedList items = new LinkedList();
+    public String tipo = "";
 
 
     public Personaje() {

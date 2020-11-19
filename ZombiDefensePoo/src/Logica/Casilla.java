@@ -4,7 +4,7 @@ public class Casilla {
 
     public Personaje personaje;
     public Item item;
-    public Boolean obstaculo;
+    public int obstaculo;
     public Boolean ruido = false;
     public int posX;
     public int posY;
