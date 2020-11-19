@@ -7,7 +7,7 @@ public class Personaje implements Runnable{
     public int vida = 100;
     public int posX = 0;
     public int posY = 0;
-    int nivel = 1;
+    public int nivel = 1;
     public int rangoMovimiento = 3;
     LinkedList habilidades = new LinkedList();
     LinkedList items = new LinkedList();

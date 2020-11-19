@@ -2,9 +2,9 @@ package Logica;
 
 public class Arma extends Item{
 
-    int damage = 12;
-    int rangoAtaque = 4;
-    int ruido = 1;
+    public int damage = 12;
+    public int rangoAtaque = 4;
+    public int ruido = 1;
 
     public Arma(String tipo) {
         super(tipo);

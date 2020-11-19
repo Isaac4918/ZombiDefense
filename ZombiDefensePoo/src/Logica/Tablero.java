@@ -161,6 +161,10 @@ public class Tablero{
         float distance = U.distancia(actual.posX, actual.posY, objetivo.posX, objetivo.posY);
         if(actual.arma.rangoAtaque >= distance){
             objetivo.recibirDmg(actual.arma.damage);
+            if(objetivo.vida <= 0){
+                zombies.remove(tablero[objetivo.posX][objetivo.posY].personaje);
+                tablero[objetivo.posX][objetivo.posY].personaje = null;
+            }
             LinkedList extenderRuido = recorrer(actual.posX, actual.posY, actual.arma.ruido);
             for(int i = 0; i < extenderRuido.size(); i++){
                 Casilla tmp = (Casilla) extenderRuido.get(i);
@@ -200,6 +204,8 @@ public class Tablero{
             Zombie tmp = (Zombie) zombies.get(cont);
             //System.out.println("Zombie " + cont + " | posx: " + tmp.posX + " | posy: " + tmp.posY);
 
+            //===============Ataque=========================
+
             int[] target = objetivoAtaque(tmp);
 
             if(target != null){
@@ -213,14 +219,18 @@ public class Tablero{
                 continue;
             }
 
+            //===============Vision=========================
+
             int[] destino = vision(tmp);
 
             if(destino != null){
                 moverZombie(tmp, destino[0], destino[1]);
                 cont++;
                 System.out.println("Ví algo");
-                System.out.println(destino[0] + ", " + destino[1]);
+                System.out.println("Zombie " + cont + " | posx: " + destino[0] + " | posy: " + destino[1]);
             }
+
+            //===============Escucha=========================
             else{
 
                 int[] destino2 = escuchar(tmp);
@@ -232,6 +242,7 @@ public class Tablero{
                     System.out.println(destino2[0] + ", " + destino2[1]);
                 }
 
+                //===============Random=========================
                 else{
 
                     moverZombie(tmp, tmp.posX, tmp.posY + 2);
@@ -246,28 +257,83 @@ public class Tablero{
         this.mostrar();
     }
 
-    public void moverZombie(Personaje zombie, int x, int y){
-        if(y<13){
-            if(tablero[x][y].personaje == null){
-                tablero[x][y].personaje = zombie;
+    public void moverZombie(Personaje zombie, int xf, int yf){
+
+        int xi = zombie.posX;
+        int yi = zombie.posY;
+
+        float dist = U.distancia(xi,yi,xf,yf);
+
+        if(yf >= 13){
+            this.zombies.remove(zombie);
+            tablero[zombie.posX][zombie.posY].personaje = null;
+        }
+
+        if(zombie.rangoMovimiento >= dist){
+            if(tablero[xf][yf].personaje == null){
+                while ((xi!=xf) || (yi!=yf)){
+
+                    if (xi<xf){
+                        xi++;
+                    }
+
+                    if (xi>xf){
+                        xi--;
+                    }
+
+                    if (yi<yf){
+                        yi++;
+                    }
+
+                    if (yi>yf){
+                        yi--;
+                    }
+                }
+
+                tablero[xi][yi].personaje = zombie;
                 tablero[zombie.posX][zombie.posY].personaje = null;
-                zombie.posX = x;
-                zombie.posY = y;
-            }else {
-                moverZombie(zombie, x, y-1);
+                zombie.posX = xi;
+                zombie.posY = yi;
             }
-        }else{
+            else {
+                moverZombie(zombie, xf, yf-1);
+            }
+        }
+        else{
+            if(tablero[xf][yf].personaje == null){
+                int cont = 0;
+                while (((xi!=xf) || (yi!=yf)) && (cont < zombie.rangoMovimiento)){
 
-            if(tablero[x][12].personaje == null){
-                tablero[x][12].personaje = zombie;
+                    if (xi<xf){
+                        xi++;
+                        cont++;
+                    }
+
+                    if (xi>xf){
+                        xi--;
+                        cont++;
+                    }
+
+                    if (yi<yf){
+                        yi++;
+                        cont++;
+                    }
+
+                    if (yi>yf){
+                        yi--;
+                        cont++;
+                    }
+                }
+
+                tablero[xi][yi].personaje = zombie;
                 tablero[zombie.posX][zombie.posY].personaje = null;
-                zombie.posX = x;
-                zombie.posY = y;
+                zombie.posX = xi;
+                zombie.posY = yi;
             }
-            this.zombies.remove(tablero[x][12].personaje);
-            tablero[x][12].personaje = null;
 
-
+            else {
+                moverZombie(zombie, xf, yf-1);
+            }
         }
     }
 
@@ -296,62 +362,39 @@ public class Tablero{
 
     public int[] vision(Zombie zombie){
         LinkedList casillas = this.recorrer(zombie.posX, zombie.posY, zombie.rangoVision);
+        LinkedList soldadosVistos = new LinkedList();
 
-        LinkedList distancias = new LinkedList();
-        float[] disXY = new float[3];
-
-        int[] xy = new int[2];
         boolean visto = false;
-        boolean Soldado = false;
+        int[] xy = new int[2];
 
-        for(int i = 0; i< casillas.size(); i++){
+        for(int i = 0; i < casillas.size(); i++){
             Casilla tmp = (Casilla) casillas.get(i);
             if(tmp.personaje != null){
-
                 try{
                     if(tmp.personaje.getClass() == Soldado.class){
-                        Soldado = true;
+                        soldadosVistos.add(tmp.personaje);
+                        visto = true;
                     }
-
                 }catch (NullPointerException e){
                 }
-
-                if(Soldado){
-                    float dista = U.distancia(zombie.posX, zombie.posY, tmp.posX, tmp.posY);
-
-                    disXY[0] = dista;
-                    disXY[1] = tmp.posX;
-                    disXY[2] = tmp.posY;
-
-                    distancias.add(disXY);
-
-                    visto = true;
-                }
             }
         }
 
-        int posMenor = 0;
-        float disMenor = 10000;
+        Soldado cercano = new Soldado();
 
-        for(int a = 0; a < distancias.size(); a++){
-            float[] tmp = (float[]) distancias.get(a);
-            if(tmp[0] < disMenor){
-                posMenor = a;
-                disMenor = tmp[0];
-            }
+        if(soldadosVistos.size() != 0){
+            cercano = U.masCerca(soldadosVistos, zombie);
         }
-
 
         if(visto){
-            float[] tmp = (float[]) distancias.get(posMenor);
-            xy[0] = (int) tmp[1];
-            xy[1] = (int) tmp[2];
-        }
-        else {
+            xy[0] = cercano.posX;
+            xy[1] = cercano.posY;
+        }else{
             xy = null;
         }
 
         return xy;
+
     }
 
     public int[] objetivoAtaque(Zombie zombie){

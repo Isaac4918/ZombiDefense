@@ -3,10 +3,10 @@ package Logica;
 import java.util.LinkedList;
 
 public class Zombie extends Personaje{
-    int rangoAtaque = 1;
-    int rangoEscucha = 4;
-    int rangoVision = 3;
-    int damage = 20;
+    public int rangoAtaque = 1;
+    public int rangoEscucha = 4;
+    public int rangoVision = 3;
+    public int damage = 34;
 
     public Zombie() {
     }

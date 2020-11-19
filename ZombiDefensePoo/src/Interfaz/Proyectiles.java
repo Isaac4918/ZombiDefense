@@ -73,7 +73,7 @@ public class Proyectiles  extends JPanel implements Runnable {
                 }if (yi>yf){
                     setYi(yi-1);
                 }
-                Thread.sleep(1700);
+                Thread.sleep(1200);
             }
 
         } catch (InterruptedException e) {

@@ -15,17 +15,20 @@ public class Ventana extends JPanel {
     public boolean mover=false;
     public boolean item=false;
     public String label_vida="";
-    public String label_ataque;
+    public String label_ataque="";
+    public String label_rango="";
+    public String label_nivel="";
 
 
     public int[] moving = {-10000, -10000};
-    public boolean atacking = false;
+    public int[] attacking = {-10000, -10000};
 
 
     Tablero T1 = new Tablero();
 
     LinkedList <Proyectiles> Heroes =new LinkedList();
     LinkedList <Proyectiles> Zombies =new LinkedList();
+    LinkedList <Proyectiles> Balas =new LinkedList();
 
 
 
@@ -103,7 +106,10 @@ public class Ventana extends JPanel {
 
         g.drawImage(img_fondo.getImage(),0,0,null);
         g.drawImage(selec.getImage(),Xtt(selec_x),Ytt(selec_y),null);
-        g.drawString(label_vida,635,100);
+        g.drawString(label_vida,635,20);
+        g.drawString(label_ataque,635,50);
+        g.drawString(label_rango,635,80);
+        g.drawString(label_nivel,635,110);
         //g.drawImage(bala.getImage(),proyectil.xi,proyectil.yi,null);
 
 
@@ -116,6 +122,9 @@ public class Ventana extends JPanel {
         if (clickX>643){
             if(clickY>162 && clickY<262 && ataque){
                 System.out.println("ataking ratataata");
+                this.Balas = new LinkedList();
+                this.attacking[0] = selec_x;
+                this.attacking[1] = selec_y;
                 clickX=-100;
                 clickY=-100;
                 ataque=true;
@@ -159,9 +168,24 @@ public class Ventana extends JPanel {
             if(this.moving[0] > 0 && this.moving[1] > 0){
                 Soldado tmp = (Soldado) T1.tablero[this.moving[0]][this.moving[1]].personaje;
                 T1.moverSoldado(tmp, selec_x, selec_y);
-                transformarHeroes(T1.soldados);
+                this.transformarHeroes(T1.soldados);
                 this.moving[0] = -10000;
                 this.moving[1] = -10000;
+            }
+
+            if(this.attacking[0] > 0 && this.attacking[1] > 0){
+                Soldado tmp = (Soldado) T1.tablero[this.attacking[0]][this.attacking[1]].personaje;
+                Zombie target = (Zombie) T1.tablero[selec_x][selec_y].personaje;
+
+                Proyectiles bullet = new Proyectiles(this.attacking[0],this.attacking[1],target.posX,target.posY);
+                this.Balas.add(bullet);
+
+                T1.ataqueSolado(tmp,target);
+                this.updateZombies(T1.zombies);
+                this.attacking[0] = -10000;
+                this.attacking[1] = -10000;
+
+
             }
 
 
@@ -175,10 +199,24 @@ public class Ventana extends JPanel {
                     this.ataque = true;
                     this.item = true;
                     label_vida="Vida: "+tmp.vida;
+                    label_ataque="Ataque: "+((Soldado) tmp).arma.damage;
+                    label_nivel="Nivel: "+tmp.nivel;
+                    label_rango="Rango de movimiento : "+tmp.rangoMovimiento;
                     soldado = true;
                 }
             }catch (NullPointerException e){
             }
+
+            try{
+                if(tmp.getClass() == Zombie.class){
+                    label_vida="Vida: "+tmp.vida;
+                    label_ataque="Ataque: "+ ((Zombie) tmp).damage;
+                    label_nivel="Nivel: "+tmp.nivel;
+                    label_rango="Rango de movimiento : "+tmp.rangoMovimiento;
+                }
+            }catch (NullPointerException e){
+            }
+
 
             if(!soldado){
                 this.mover = false;
@@ -218,6 +256,13 @@ public class Ventana extends JPanel {
             Runnable aux = h;
             new Thread(h).start();
             g.drawImage(zomb1.getImage(),h.xi,h.yi,null);
+        }
+
+        for(int i = 0; i<= Balas.size()-1; i++){
+            Proyectiles h= (Proyectiles) Balas.get(i);
+            Runnable aux = h;
+            new Thread(h).start();
+            g.drawImage(bala.getImage(),h.xi,h.yi,null);
         }
 
         for(int i = 0; i<= Heroes.size()-1; i++){
@@ -298,6 +343,15 @@ public class Ventana extends JPanel {
             Soldado tmp = (Soldado) Soldados.get(i);
             Proyectiles heroe1 = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
             this.Heroes.add(heroe1);
+        }
+    }
+
+    public void updateZombies(LinkedList listaZombies){
+        this.Zombies = new LinkedList();
+        for(int i = 0; i < listaZombies.size(); i++){
+            Zombie tmp = (Zombie) listaZombies.get(i);
+            Proyectiles zombie = new Proyectiles(tmp.posX,tmp.posY,tmp.posX,tmp.posY);
+            this.Zombies.add(zombie);
         }
     }
 
